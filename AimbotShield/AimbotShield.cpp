@@ -1,20 +1,86 @@
-﻿// AimbotShield.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
-//
-
+﻿#include <windows.h>
 #include <iostream>
+#include <deque>
+#include <cmath>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+struct MouseMovement {
+    int dx;
+    int dy;
+    DWORD timestamp;
+};
+
+std::deque<MouseMovement> mouseMovements;
+const size_t MAX_MOVEMENTS = 100;
+const int MAX_SPEED_THRESHOLD = 30;
+
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    if (message == WM_INPUT) {
+        UINT dwSize;
+        GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
+        LPBYTE lpb = new BYTE[dwSize];
+        if (lpb == NULL) return 0;
+
+        if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) == dwSize) {
+            RAWINPUT* raw = (RAWINPUT*)lpb;
+            if (raw->header.dwType == RIM_TYPEMOUSE) {
+                int dx = raw->data.mouse.lLastX;
+                int dy = raw->data.mouse.lLastY;
+                DWORD currentTime = GetTickCount64();
+                mouseMovements.push_back({ dx, dy, currentTime });
+                if (mouseMovements.size() > MAX_MOVEMENTS) {
+                    mouseMovements.pop_front();
+                }
+
+                printf("현재 x,y 이동 거리 : ( %d, %d )\n", dx, dy);
+                if (abs(dx) > MAX_SPEED_THRESHOLD || abs(dy) > MAX_SPEED_THRESHOLD) {
+                    std::cout << "비정상적인 마우스 이동 감지! Aimbot 의심\n";
+                }
+            }
+        }
+        delete[] lpb;
+    }
+    return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-// 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
-// 프로그램 디버그: <F5> 키 또는 [디버그] > [디버깅 시작] 메뉴
+int main() {
+    const wchar_t* CLASS_NAME = L"AimbotShield";
+    WNDCLASS wc = {};
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.lpszClassName = CLASS_NAME;
 
-// 시작을 위한 팁: 
-//   1. [솔루션 탐색기] 창을 사용하여 파일을 추가/관리합니다.
-//   2. [팀 탐색기] 창을 사용하여 소스 제어에 연결합니다.
-//   3. [출력] 창을 사용하여 빌드 출력 및 기타 메시지를 확인합니다.
-//   4. [오류 목록] 창을 사용하여 오류를 봅니다.
-//   5. [프로젝트] > [새 항목 추가]로 이동하여 새 코드 파일을 만들거나, [프로젝트] > [기존 항목 추가]로 이동하여 기존 코드 파일을 프로젝트에 추가합니다.
-//   6. 나중에 이 프로젝트를 다시 열려면 [파일] > [열기] > [프로젝트]로 이동하고 .sln 파일을 선택합니다.
+    if (!RegisterClass(&wc)) {
+        std::cerr << "윈도우 클래스 등록 실패\n";
+        return -1;
+    }
+
+    HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"Aimbot Shield", WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        NULL, NULL, GetModuleHandle(NULL), NULL);
+
+    if (hwnd == NULL) {
+        std::cerr << "윈도우 생성 실패\n";
+        return -1;
+    }
+
+    // Raw Input 초기화
+    RAWINPUTDEVICE rid;
+    rid.usUsagePage = 0x01;
+    rid.usUsage = 0x02;
+    rid.dwFlags = RIDEV_INPUTSINK;
+    rid.hwndTarget = hwnd;  // 윈도우 핸들로 설정
+
+    if (!RegisterRawInputDevices(&rid, 1, sizeof(rid))) {
+        std::cerr << "Raw Input 초기화 실패\n";
+        return -1;
+    }
+
+    // 메시지 루프
+    MSG msg = {};
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return 0;
+}
