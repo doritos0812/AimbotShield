@@ -11,7 +11,7 @@ struct MouseMovement {
 
 std::deque<MouseMovement> mouseMovements;
 const size_t MAX_MOVEMENTS = 100;
-const int MAX_SPEED_THRESHOLD = 5000;
+const int MAX_SPEED_THRESHOLD = 6000;
 
 // Raw Input 감지 활성화/비활성화
 bool isDetectionActive = true;
