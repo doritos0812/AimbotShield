@@ -137,7 +137,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AimbotShield.cpp" />
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="SpeedChecker.cpp" />
+    <ClCompile Include="AimbotAlert.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.h" />
+    <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="SpeedChecker.h" />
+    <ClInclude Include="AimbotAlert.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
