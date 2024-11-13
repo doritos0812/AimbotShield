@@ -26,13 +26,17 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 int dx = raw->data.mouse.lLastX;
                 int dy = raw->data.mouse.lLastY;
                 DWORD currentTime = GetTickCount64();
+
+                // 이동 거리 계산 (피타고라스 정리)
+                double distance = std::sqrt(dx * dx + dy * dy);
+
                 mouseMovements.push_back({ dx, dy, currentTime });
                 if (mouseMovements.size() > MAX_MOVEMENTS) {
                     mouseMovements.pop_front();
                 }
 
-                printf("현재 x,y 이동 거리 : ( %d, %d )\n", dx, dy);
-                if (abs(dx) > MAX_SPEED_THRESHOLD || abs(dy) > MAX_SPEED_THRESHOLD) {
+                printf("현재 x,y 이동 거리 : ( %d, %d ), 대각선 거리 : %.2f\n", dx, dy, distance);
+                if (distance > MAX_SPEED_THRESHOLD) {
                     std::cout << "비정상적인 마우스 이동 감지! Aimbot 의심\n";
                 }
             }
