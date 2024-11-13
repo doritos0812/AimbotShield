@@ -1,3 +1,14 @@
+AimbotShield (0.1.0) unstable; urgency=medium
+
+  * [feat] Calculate moved distance via Pythagorean theorem
+  * [feat] Add getting deltaTime and calculating speed logic
+  * [feat] Add esc key to active/inactive raw input detection
+  * [feat] Add pop-up window to alart Aimbot running
+  * [feat] Modify MAX_SPEED_THRESHOLD to 6000
+  * [refactor] Refactor whole source code into seperate files & modules
+
+ -- Hyeongmin Kim <doritos2498@gmail.com>  Wed, 13 Nov 2024 17:06:51 +0900
+
 AimbotShield (0.0.1) unstable; urgency=medium
 
   * initial commit
