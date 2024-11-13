@@ -13,6 +13,9 @@ std::deque<MouseMovement> mouseMovements;
 const size_t MAX_MOVEMENTS = 100;
 const int MAX_SPEED_THRESHOLD = 5000;
 
+// Raw Input 감지 활성화/비활성화
+bool isDetectionActive = true;
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     if (message == WM_INPUT) {
         UINT dwSize;
@@ -22,7 +25,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
         if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) == dwSize) {
             RAWINPUT* raw = (RAWINPUT*)lpb;
-            if (raw->header.dwType == RIM_TYPEMOUSE) {
+
+            // 마우스 이벤트 감지
+            if (raw->header.dwType == RIM_TYPEMOUSE && isDetectionActive) {
                 int dx = raw->data.mouse.lLastX;
                 int dy = raw->data.mouse.lLastY;
                 DWORD currentTime = GetTickCount64();
@@ -48,6 +53,19 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 mouseMovements.push_back({ dx, dy, currentTime });
                 if (mouseMovements.size() > MAX_MOVEMENTS) {
                     mouseMovements.pop_front();
+                }
+            }
+            // 키보드 이벤트 감지 (ESC 키 확인)
+            else if (raw->header.dwType == RIM_TYPEKEYBOARD) {
+                // ESC 키 눌림 감지
+                if (raw->data.keyboard.VKey == VK_ESCAPE && raw->data.keyboard.Flags == RI_KEY_MAKE) {
+                    isDetectionActive = !isDetectionActive;
+                    if (isDetectionActive) {
+                        std::cout << "Raw Input 감지 재개\n";
+                    }
+                    else {
+                        std::cout << "Raw Input 감지 중지\n";
+                    }
                 }
             }
         }
@@ -77,14 +95,22 @@ int main() {
         return -1;
     }
 
-    // Raw Input 초기화
-    RAWINPUTDEVICE rid;
-    rid.usUsagePage = 0x01;
-    rid.usUsage = 0x02;
-    rid.dwFlags = RIDEV_INPUTSINK;
-    rid.hwndTarget = hwnd;  // 윈도우 핸들로 설정
+    // 마우스 및 키보드 Raw Input 초기화
+    RAWINPUTDEVICE rid[2];
 
-    if (!RegisterRawInputDevices(&rid, 1, sizeof(rid))) {
+    // 마우스
+    rid[0].usUsagePage = 0x01;
+    rid[0].usUsage = 0x02;
+    rid[0].dwFlags = RIDEV_INPUTSINK;
+    rid[0].hwndTarget = hwnd;
+
+    // 키보드
+    rid[1].usUsagePage = 0x01;
+    rid[1].usUsage = 0x06;
+    rid[1].dwFlags = RIDEV_INPUTSINK;
+    rid[1].hwndTarget = hwnd;
+
+    if (!RegisterRawInputDevices(rid, 2, sizeof(rid[0]))) {
         std::cerr << "Raw Input 초기화 실패\n";
         return -1;
     }
