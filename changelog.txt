@@ -1,3 +1,12 @@
+AimbotShield (0.1.1) unstable; urgency=medium
+
+  * [feat] Add logic to check consistent, linear movement of mouse
+  * [feat] Set each Alart message with each checking logic
+  * [typo] Fix typo AimbotAlert to AimbotAlart
+  * [refactor] Change name of SpeedChecker to AimbotWatcher
+
+ -- Hyeongmin Kim <doritos2498@gmail.com>  Sat, 16 Nov 2024 18:18:22 +0900
+
 AimbotShield (0.1.0) unstable; urgency=medium
 
   * [feat] Calculate moved distance via Pythagorean theorem
