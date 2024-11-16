@@ -1,5 +1,5 @@
-#ifndef SPEED_CHECKER_H
-#define SPEED_CHECKER_H
+#ifndef AIMBOT_WATCHER_H
+#define AIMBOT_WATCHER_H
 
 #include <windows.h>
 
@@ -9,4 +9,4 @@ void CalculateAndCheckSpeed(int dx, int dy, DWORD currentTime, HWND hWnd);
 void CheckConsistentMovement(int dx, int dy, HWND hWnd);
 void CheckLinearMovement(int dx, int dy, HWND hWnd);
 
-#endif // SPEED_CHECKER_H
+#endif // AIMBOT_WATCHER_H

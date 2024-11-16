@@ -18,7 +18,7 @@
     <ClCompile Include="InputHandler.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SpeedChecker.cpp">
+    <ClCompile Include="AimbotWatcher.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="AimbotAlart.cpp">
@@ -35,7 +35,7 @@
     <ClInclude Include="InputHandler.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SpeedChecker.h">
+    <ClInclude Include="AimbotWatcher.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="AimbotAlart.h">
