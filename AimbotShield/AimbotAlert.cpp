@@ -1,7 +1,22 @@
 #include "AimbotAlert.h"
 #include <iostream>
+#include <string>
 
-void ShowWarningPopup(HWND hWnd) {
-    std::cout << "비정상적인 마우스 속도 감지! Aimbot 의심\n";
-    MessageBox(hWnd, L"비정상적인 마우스 속도 감지! Aimbot 의심", L"경고", MB_OK | MB_ICONWARNING);
+std::wstring ConvertToWideChar(const char* message) {
+    if (message == nullptr) return L"";
+
+    // 변환에 필요한 버퍼 크기 계산
+    int bufferSize = MultiByteToWideChar(CP_ACP, 0, message, -1, NULL, 0);
+
+    // 변환 수행
+    std::wstring wideMessage(bufferSize, 0);
+    MultiByteToWideChar(CP_ACP, 0, message, -1, &wideMessage[0], bufferSize);
+
+    return wideMessage;
+}
+
+void ShowWarningPopup(HWND hWnd, const char* message) {
+    std::cout << message << " Aimbot 의심\n";
+    std::wstring wideMessage = ConvertToWideChar(message);
+    MessageBox(hWnd, wideMessage.c_str(), L"경고", MB_OK | MB_ICONWARNING);
 }

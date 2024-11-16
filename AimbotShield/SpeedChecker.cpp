@@ -63,7 +63,8 @@ void CalculateAndCheckSpeed(int dx, int dy, DWORD currentTime, HWND hWnd) {
     double speed = distance / deltaTime;
     std::cout << "현재 x,y 이동 거리 : ( " << dx << ", " << dy << " ), 속도: " << speed << " 픽셀/초\n";
 
-    if (speed > MAX_SPEED_THRESHOLD) ShowWarningPopup(hWnd);
+    const char* errMessage = "비정상적인 마우스 속도 감지!";
+    if (speed > MAX_SPEED_THRESHOLD) ShowWarningPopup(hWnd, errMessage);
 }
 
 void CheckConsistentMovement(int dx, int dy, HWND hWnd) {
@@ -81,7 +82,8 @@ void CheckConsistentMovement(int dx, int dy, HWND hWnd) {
         consistentCount = 0;
     }
 
-    if (consistentCount >= CONSISTENT_THRESHOLD) ShowWarningPopup(hWnd);
+    const char* errMessage = "비정상적인 마우스 이동 간격 감지!";
+    if (consistentCount >= CONSISTENT_THRESHOLD) ShowWarningPopup(hWnd, errMessage);
 }
 
 void CheckLinearMovement(int dx, int dy, HWND hWnd) {
@@ -104,5 +106,6 @@ void CheckLinearMovement(int dx, int dy, HWND hWnd) {
         linearCount = 0;
     }
 
-    if (linearCount >= LINEAR_THRESHOLD) ShowWarningPopup(hWnd);
+    const char* errMessage = "비정상적인 마우스 이동 기울기 감지!";
+    if (linearCount >= LINEAR_THRESHOLD) ShowWarningPopup(hWnd, errMessage);
 }
