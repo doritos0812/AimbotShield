@@ -21,7 +21,7 @@
     <ClCompile Include="SpeedChecker.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="AimbotAlert.cpp">
+    <ClCompile Include="AimbotAlart.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
@@ -38,7 +38,7 @@
     <ClInclude Include="SpeedChecker.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="AimbotAlert.h">
+    <ClInclude Include="AimbotAlart.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
