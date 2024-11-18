@@ -2,15 +2,29 @@
 #include "InputHandler.h"
 #include "AimbotAlart.h"
 #include <iostream>
+#include <numeric>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <cmath>
 
+
 const size_t MAX_MOVEMENTS = 100;
+
 const size_t CONSISTENT_THRESHOLD = 10;
 const size_t LINEAR_THRESHOLD = 20;
 const int MAX_SPEED_THRESHOLD = 6000;
 const int MIN_MOVEMENT_THRESHOLD = 20;
+const double DIRECTION_THRESHOLD = 0.85;
+
 size_t consistentCount = 0;
 size_t linearCount = 0;
+size_t fixedDirectionCount = 0;
+size_t checkDirectionCount = 0;
+
+// 8방향의 각도 (라디안 단위)
+const double ANGLE_THRESHOLDS[] = { -M_PI, -3 * M_PI_4, -M_PI_2, -M_PI_4, 0, M_PI_4, M_PI_2, 3 * M_PI_4, M_PI};
+
 
 void ProcessRawInput(LPARAM lParam, HWND hWnd) {
     UINT dwSize;
@@ -42,9 +56,10 @@ void HandleMouseMovement(int dx, int dy, DWORD currentTime, HWND hWnd) {
 
     if (!mouseMovements.empty()) {
         if (std::abs(dx) > MIN_MOVEMENT_THRESHOLD || std::abs(dy) > MIN_MOVEMENT_THRESHOLD) {
-            CalculateAndCheckSpeed(dx, dy, currentTime, hWnd);
+            CheckMouseSpeed(dx, dy, currentTime, hWnd);
             CheckConsistentMovement(dx, dy, hWnd);
             CheckLinearMovement(dx, dy, hWnd);
+            ChecktLimitedDirection(dx, dy, hWnd);
         }
     }
 
@@ -54,7 +69,7 @@ void HandleMouseMovement(int dx, int dy, DWORD currentTime, HWND hWnd) {
     }
 }
 
-void CalculateAndCheckSpeed(int dx, int dy, DWORD currentTime, HWND hWnd) {
+void CheckMouseSpeed(int dx, int dy, DWORD currentTime, HWND hWnd) {
     DWORD previousTime = mouseMovements.back().timestamp;
     double deltaTime = (currentTime - previousTime) / 1000.0;  // Convert ms to seconds
 
@@ -108,4 +123,36 @@ void CheckLinearMovement(int dx, int dy, HWND hWnd) {
 
     const char* errMessage = "비정상적인 마우스 이동 기울기 감지!";
     if (linearCount >= LINEAR_THRESHOLD) ShowWarningPopup(hWnd, errMessage);
+}
+
+double CalculateAngle(int dx, int dy) {
+    return std::atan2(dy, dx); // -π ~ π
+}
+
+bool IsAngleCloseToFixedDirections(double angle) {
+    for (double threshold : ANGLE_THRESHOLDS) {
+        if (std::abs(angle - threshold) < 0.2) return true; // 오차 범위 설정
+    }
+    return false;
+}
+
+void ChecktLimitedDirection(int dx, int dy, HWND hWnd) {
+    checkDirectionCount++;
+
+    double angle = CalculateAngle(dx, dy);
+    if (IsAngleCloseToFixedDirections(angle)) fixedDirectionCount++;
+
+    if (checkDirectionCount >= 300) {
+        // 최근 300번 중, 일정 비율 이상이 8방향으로 움직이면 Aimbot 의심
+        double fixedDirectionRatio = static_cast<double>(fixedDirectionCount) / checkDirectionCount;
+        std::cout << "8방향 일관성 이동 횟수 : " << fixedDirectionCount << "  전체 이동 횟수 : " << checkDirectionCount << "\n";
+        std::cout << "일관성 비율 : " << fixedDirectionRatio << "\n";
+
+        // Count 초기화
+        checkDirectionCount = 0;
+        fixedDirectionCount = 0;
+
+        const char* errMessage = "비정상적인 마우스 이동 방향 일관성 감지!";
+        if (fixedDirectionRatio > DIRECTION_THRESHOLD) ShowWarningPopup(hWnd, errMessage);
+    }
 }
