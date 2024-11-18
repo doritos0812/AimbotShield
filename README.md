@@ -68,3 +68,14 @@ AimTrainerHack에서 Mouse Move Input의 크기를 조절하여 속도 검출 �
 
 ### 기타 오타 수정
 - AimbotAlert -> AimbotAlart
+
+## 24.11.18
+AimTrainerHack에서 Mouse Move의 직진성과 일관성을 회피하기 위해서 Input에 랜덤값을 더해주는 것을 확인
+이로써, 직진성과 일관성을 감지하여 Aimbot을 검출해내는 기능은 AimTrainerHack에게 무의미 해짐
+Aimbot의 특성을 살려서 이를 감지해낼 추가적인 로직이 필요
+
+### 특정 방향으로 이동하는 방향성 모니터링
+- 모든 Aimbot의 특성은 아니지만, AimTrainerHack은 상하좌우 대각선 8방향으로만 이동하는 구조로 되어 있음
+   - 이 특징을 근거로 Input의 Radian 각도를 atan2를 통해 측정
+   - 랜덤값을 넣어주므로, 0.2 정도의 오차 범위를 설정
+- 8방향 쪽으로 이동하는 경우를 카운팅하고, 이 비율이 특정 비율을 넘어서면 Aimbot으로 판단
