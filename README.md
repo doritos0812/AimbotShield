@@ -79,3 +79,7 @@ Aimbot의 특성을 살려서 이를 감지해낼 추가적인 로직이 필요
    - 이 특징을 근거로 Input의 Radian 각도를 atan2를 통해 측정
    - 랜덤값을 넣어주므로, 0.2 정도의 오차 범위를 설정
 - 8방향 쪽으로 이동하는 경우를 카운팅하고, 이 비율이 특정 비율을 넘어서면 Aimbot으로 판단
+
+## 24.11.22
+관련 내용 정리 Notion 문서 링크 첨부
+- https://www.notion.so/AimbotShield-Anti-Cheat-Program-13cb2d18180380f38871fc4faeaeefe0
